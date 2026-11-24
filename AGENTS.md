@@ -1,6 +1,6 @@
 # RAG Memory Agents
 
-Use `rag_cli.py` for local ingestion, retrieval, crawling, and planning jobs. `run_embed.py` also supports embedding-only ingestion. `mcp_server.py` exposes memory lookup, completion handoffs, planning, and verified snippets to coding agents. The Flask/Vue console stays in the project as an optional, manually started tool.
+Use `rag_cli.py` for local ingestion, retrieval, crawling, and planning jobs. `run_embed.py` also supports embedding-only ingestion. `mcp_server.py` exposes memory lookup, completion handoffs, planning, and verified snippets to coding agents. The optional Flask/Vue console requires a local copy of the ingestion UI package.
 
 ## Main-agent memory calls
 

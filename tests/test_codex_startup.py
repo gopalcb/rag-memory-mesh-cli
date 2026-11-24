@@ -5,6 +5,7 @@ from threading import Thread
 
 import pytest
 
+from scripts import ensure_ingestion_ui
 from scripts.ensure_ingestion_ui import ensure_ui
 from scripts.install_codex_hook import HOOK_LABEL, install_hook
 
@@ -48,3 +49,11 @@ def test_ensure_ui_checks_service_identity(tmp_path, service):
         finally:
             server.shutdown()
             thread.join()
+
+
+def test_ensure_ui_reports_missing_optional_package(tmp_path, monkeypatch):
+    monkeypatch.setattr(ensure_ingestion_ui, "PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(ensure_ingestion_ui, "healthy", lambda port: False)
+    monkeypatch.setattr(ensure_ingestion_ui, "port_in_use", lambda port: False)
+
+    assert ensure_ui(27743, tmp_path)["status"] == "unavailable"

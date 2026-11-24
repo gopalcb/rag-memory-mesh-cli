@@ -11,3 +11,10 @@ __pycache__/
 /docs/
 /.codex/
 .DS_Store
+
+/ARCHITECTURE.md
+/CHANGES.md
+/DESIGN.md
+/UX-CONTRACT.md
+/code-map.md
+/ingestion_ui/

@@ -100,4 +100,4 @@ By default the index is under `.rag_memory_data/`. A separate YAML profile selec
 | `rag_cli.py ingest PATH --reconcile` | Refresh a folder and remove tracked files that are missing or empty within it. |
 | `rag_cli.py backup PATH` / `rag_cli.py restore PATH` | Export or restore a verified snapshot. |
 
-Run these commands with `.venv/bin/python`. Run the test suite with `.venv/bin/python -m pytest -q). For the module layout and process boundaries, see the [architecture](ARCHITECTURE.md) and [code map](code-map.md).
+Run these commands with `.venv/bin/python`. Run the CLI test suite with `.venv/bin/python -m pytest -q`.

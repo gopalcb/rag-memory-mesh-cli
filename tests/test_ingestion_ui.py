@@ -1,9 +1,12 @@
 import re
+from importlib import import_module
 from pathlib import Path
 
-from ingestion_ui import create_app
-from ingestion_ui.watcher import scan_watches
-from ingestion_ui.worker import IngestionWorker
+import pytest
+
+create_app = pytest.importorskip("ingestion_ui").create_app
+scan_watches = import_module("ingestion_ui.watcher").scan_watches
+IngestionWorker = import_module("ingestion_ui.worker").IngestionWorker
 
 
 def console(tmp_path: Path):

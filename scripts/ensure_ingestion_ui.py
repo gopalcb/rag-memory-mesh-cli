@@ -45,6 +45,8 @@ def ensure_ui(port: int, runtime: Path, config: Path | None = None) -> dict:
             return {"status": "already_running", "url": url}
         if port_in_use(port):
             raise RuntimeError(f"Port {port} is already occupied by a service without the RAG ingestion identity")
+        if not (PROJECT_ROOT / "ingestion_ui" / "__main__.py").is_file():
+            return {"status": "unavailable", "reason": "The optional ingestion UI is absent from this checkout."}
         log_path = runtime / f"ingestion-ui-{port}.log"
         env = {**os.environ, "PYTHONUNBUFFERED": "1"}
         env.pop("RAG_CONFIG_PATH", None)
