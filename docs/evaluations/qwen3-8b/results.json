@@ -1,0 +1,1349 @@
+{
+  "generated_at": "2026-11-24T21:53:33.106503+00:00",
+  "model": {
+    "name": "qwen3:8b",
+    "model": "qwen3:8b",
+    "modified_at": "2026-11-24T16:52:50.444615292-05:00",
+    "size": 5225388164,
+    "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+    "details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "qwen3",
+      "families": [
+        "qwen3"
+      ],
+      "parameter_size": "8.2B",
+      "quantization_level": "Q4_K_M",
+      "context_length": 40960,
+      "embedding_length": 4096,
+      "runner": "ggml"
+    },
+    "capabilities": [
+      "completion",
+      "tools",
+      "thinking"
+    ]
+  },
+  "ollama": "0.40.17",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "processor": "Apple M2",
+  "memory_bytes": 17179869184,
+  "options": {
+    "temperature": 0,
+    "seed": 42,
+    "num_ctx": 8192,
+    "num_predict": 480
+  },
+  "system_prompt": "You write small standalone Python 3 functions. Return Python source only, with any required standard-library imports. Do not import the project. Use supplied memory as reference data, prioritizing the active project over drafts or other consumers. If a required exact project policy cannot be inferred or is unpublished, answer exactly MISSING_POLICY. Implement ordinary fully specified Python tasks without memory.",
+  "ingestion": {
+    "scanned_files": 13,
+    "indexed_files": 13,
+    "removed_files": 0,
+    "skipped_unchanged": 0,
+    "total_chunks_upserted": 16,
+    "total_graph_edges_upserted": 7,
+    "has_changes": true
+  },
+  "cases": [
+    {
+      "id": "digest",
+      "title": "Reuse the digest contract",
+      "group": "Repository contract",
+      "task": "Implement digest_key(value: str, length: int) -> str as a standalone compatibility wrapper that produces the existing RAG memory store's short hash keys.",
+      "query": "Reuse sha256_hex for stable shortened memory handoff digest keys.",
+      "keywords": [
+        "sha256_hex",
+        "digest",
+        "hash"
+      ],
+      "expected_source": "utils.py",
+      "reference": [
+        {
+          "path": "utils.py",
+          "excerpt": "from hashlib import sha256\n\n\ndef sha256_hex(value: str, length: int = 64) -> str:\n    return sha256(value.encode(\"utf-8\")).hexdigest()[:length]\n"
+        }
+      ],
+      "retrieval": {
+        "seconds": 0.03187900000193622,
+        "status": "found",
+        "hits": [
+          {
+            "path": "utils.py",
+            "excerpt": "# Symbol: sha256_hex (function) | File: utils.py\n# Intent: Python function `sha256_hex`\n\nfrom hashlib import sha256\n\ndef sha256_hex(value: str, length: int = 64) -> str:\n    return sha256(value.encode(\"utf-8\")).hexdigest()[:length]",
+            "collection": "reusable_code",
+            "score": 0.00656,
+            "graph_relation": null
+          }
+        ]
+      },
+      "order": [
+        "reference",
+        "baseline",
+        "rag"
+      ],
+      "arms": {
+        "reference": {
+          "response": "```python\nfrom hashlib import sha256\n\ndef digest_key(value: str, length: int) -> str:\n    return sha256(value.encode(\"utf-8\")).hexdigest()[:length]\n```",
+          "request_chars": 365,
+          "seconds": 4.355646791998879,
+          "checks": [
+            [
+              "Stable UTF-8 SHA-256 prefix",
+              true,
+              ""
+            ],
+            [
+              "Unicode input is encoded as UTF-8",
+              true,
+              ""
+            ],
+            [
+              "Zero length yields empty",
+              true,
+              ""
+            ],
+            [
+              "Length beyond digest returns full hash",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 196,
+          "eval_count": 45,
+          "done_reason": "stop",
+          "load_duration": 0.002601292,
+          "prompt_eval_duration": 1.667879,
+          "eval_duration": 2.678398
+        },
+        "baseline": {
+          "response": "```python\nimport hashlib\n\ndef digest_key(value: str, length: int) -> str:\n    hash_object = hashlib.sha256(value.encode('utf-8'))\n    hex_dig = hash_object.hexdigest()\n    return hex_dig[:length]\n```",
+          "request_chars": 179,
+          "seconds": 3.710179292000248,
+          "checks": [
+            [
+              "Stable UTF-8 SHA-256 prefix",
+              true,
+              ""
+            ],
+            [
+              "Unicode input is encoded as UTF-8",
+              true,
+              ""
+            ],
+            [
+              "Zero length yields empty",
+              true,
+              ""
+            ],
+            [
+              "Length beyond digest returns full hash",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 133,
+          "eval_count": 56,
+          "done_reason": "stop",
+          "load_duration": 0.000620542,
+          "prompt_eval_duration": 0.372493,
+          "eval_duration": 3.331154
+        },
+        "rag": {
+          "response": "```python\nfrom hashlib import sha256\n\ndef digest_key(value: str, length: int) -> str:\n    return sha256(value.encode(\"utf-8\")).hexdigest()[:length]\n```",
+          "request_chars": 453,
+          "seconds": 3.59206075000111,
+          "checks": [
+            [
+              "Stable UTF-8 SHA-256 prefix",
+              true,
+              ""
+            ],
+            [
+              "Unicode input is encoded as UTF-8",
+              true,
+              ""
+            ],
+            [
+              "Zero length yields empty",
+              true,
+              ""
+            ],
+            [
+              "Length beyond digest returns full hash",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 224,
+          "eval_count": 45,
+          "done_reason": "stop",
+          "load_duration": 0.000658334,
+          "prompt_eval_duration": 0.914344,
+          "eval_duration": 2.673475
+        }
+      },
+      "audit": {}
+    },
+    {
+      "id": "decode",
+      "title": "Decode an indexed text sample",
+      "group": "Repository contract",
+      "task": "Implement preview_text(raw: bytes, truncated: bool = False) -> str | None, compatible with the RAG memory loader's decoder for text, binary controls, and capped samples.",
+      "query": "Reuse decode_source UTF-8 code, binary controls and truncated sample handling from the file loader.",
+      "keywords": [
+        "decode_source",
+        "binary controls",
+        "truncated"
+      ],
+      "expected_source": "embedding/decode_source.py",
+      "reference": [
+        {
+          "path": "embedding/decode_source.py",
+          "excerpt": "import codecs\nimport re\nBINARY_CONTROLS = re.compile(rb\"[\\x00-\\x08\\x0b\\x0e-\\x1f\\x7f]\")\n\n\ndef decode_source(raw: bytes, truncated: bool = False) -> str | None:\n    \"\"\"Decode text strictly and reject binary controls, including NUL bytes.\"\"\"\n    if BINARY_CONTROLS.search(raw):\n        return None\n    try:\n        return codecs.utf_8_decode(raw, \"strict\", not truncated)[0]\n    except UnicodeDecodeError:\n        return None\n"
+        }
+      ],
+      "retrieval": {
+        "seconds": 0.02611212499323301,
+        "status": "found",
+        "hits": [
+          {
+            "path": "embedding/decode_source.py",
+            "excerpt": "# Symbol: decode_source (function) | File: decode_source.py\n# Intent: Decode text strictly and reject binary controls, including NUL bytes.\n\nimport codecs\nimport re\n\ndef decode_source(raw: bytes, truncated: bool = False) -> str | None:\n    \"\"\"Decode text strictly and reject binary controls, including NUL bytes.\"\"\"\n    if BINARY_CONTROLS.search(raw):\n        return None\n    try:\n        return codecs.utf_8_decode(raw, \"strict\", not truncated)[0]\n    except UnicodeDecodeError:\n        return None",
+            "collection": "reusable_code",
+            "score": 0.01639,
+            "graph_relation": null
+          },
+          {
+            "path": "implementation-summary.md",
+            "excerpt": "[Document: implementation-summary.md | Section: Prior implementation snapshots > Changed files]\n## Changed files  \n- `utils.py` — Fixture snapshot\n- `embedding/decode_source.py` — Fixture snapshot\n- `planning/changed-file-path.md` — Fixture snapshot\n- `decisions/batch-size.md` — Fixture snapshot\n- `decisions/retry-budget.md` — Fixture snapshot\n- `decisions/compact-status.md` — Fixture snapshot\n- `drafts/admin-status.md` — Fixture snapshot\n- `drafts/retry-backoff.md` — Fixture snapshot\n- `drafts/batch-size-archive.md` — Fixture snapshot\n- `notes/spool-budget.md` — Fixture snapshot\n- `notes/chunking.md` — Fixture snapshot\n- `notes/exports.md` — Fixture snapshot",
+            "collection": "research_docs",
+            "score": 0.00656,
+            "graph_relation": null
+          }
+        ]
+      },
+      "order": [
+        "reference",
+        "rag",
+        "baseline"
+      ],
+      "arms": {
+        "reference": {
+          "response": "```python\nimport codecs\nimport re\n\nBINARY_CONTROLS = re.compile(rb\"[\\\\x00-\\\\x08\\\\x0b\\\\x0e-\\\\x1f\\\\x7f]\")\n\ndef preview_text(raw: bytes, truncated: bool = False) -> str | None:\n    if BINARY_CONTROLS.search(raw):\n        return None\n    try:\n        return codecs.utf_8_decode(raw, \"strict\", not truncated)[0]\n    except UnicodeDecodeError:\n        return None\n```",
+          "request_chars": 700,
+          "seconds": 8.139672374993097,
+          "checks": [
+            [
+              "Preserve text and whitespace",
+              false,
+              "PatternError"
+            ],
+            [
+              "Reject ASCII DEL",
+              false,
+              "PatternError"
+            ],
+            [
+              "Drop an incomplete trailing UTF-8 sequence in capped samples",
+              false,
+              "PatternError"
+            ],
+            [
+              "Reject malformed UTF-8 anywhere",
+              false,
+              "PatternError"
+            ]
+          ],
+          "prompt_eval_count": 287,
+          "eval_count": 109,
+          "done_reason": "stop",
+          "load_duration": 0.000634709,
+          "prompt_eval_duration": 1.598598,
+          "eval_duration": 6.53155
+        },
+        "rag": {
+          "response": "```python\nimport re\nimport codecs\n\nBINARY_CONTROLS = re.compile(b'[\\\\x00-\\\\x1f\\\\x7f]')\n\ndef preview_text(raw: bytes, truncated: bool = False) -> str | None:\n    if BINARY_CONTROLS.search(raw):\n        return None\n    try:\n        return codecs.utf_8_decode(raw, \"strict\", not truncated)[0]\n    except UnicodeDecodeError:\n        return None\n```",
+          "request_chars": 1502,
+          "seconds": 8.29375391699432,
+          "checks": [
+            [
+              "Preserve text and whitespace",
+              false,
+              "Wrong result"
+            ],
+            [
+              "Reject ASCII DEL",
+              true,
+              ""
+            ],
+            [
+              "Drop an incomplete trailing UTF-8 sequence in capped samples",
+              true,
+              ""
+            ],
+            [
+              "Reject malformed UTF-8 anywhere",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 460,
+          "eval_count": 96,
+          "done_reason": "stop",
+          "load_duration": 0.000666833,
+          "prompt_eval_duration": 2.518042,
+          "eval_duration": 5.763882
+        },
+        "baseline": {
+          "response": "```python\ndef preview_text(raw: bytes, truncated: bool = False) -> str | None:\n    try:\n        text = raw.decode('utf-8', errors='ignore')\n        if truncated:\n            return text[:100] + '...' if len(text) > 100 else text\n        return text\n    except UnicodeDecodeError:\n        return None\n```",
+          "request_chars": 195,
+          "seconds": 5.113298333992134,
+          "checks": [
+            [
+              "Preserve text and whitespace",
+              true,
+              ""
+            ],
+            [
+              "Reject ASCII DEL",
+              false,
+              "Wrong result"
+            ],
+            [
+              "Drop an incomplete trailing UTF-8 sequence in capped samples",
+              true,
+              ""
+            ],
+            [
+              "Reject malformed UTF-8 anywhere",
+              false,
+              "Wrong result"
+            ]
+          ],
+          "prompt_eval_count": 139,
+          "eval_count": 81,
+          "done_reason": "stop",
+          "load_duration": 0.000732375,
+          "prompt_eval_duration": 0.187767,
+          "eval_duration": 4.903184
+        }
+      },
+      "audit": {
+        "reference": [
+          [
+            "Reject an incomplete sequence at real end of file",
+            false,
+            "PatternError"
+          ],
+          [
+            "Reject NUL in otherwise valid UTF-8",
+            false,
+            "PatternError"
+          ]
+        ],
+        "rag": [
+          [
+            "Reject an incomplete sequence at real end of file",
+            true,
+            ""
+          ],
+          [
+            "Reject NUL in otherwise valid UTF-8",
+            true,
+            ""
+          ]
+        ],
+        "baseline": [
+          [
+            "Reject an incomplete sequence at real end of file",
+            false,
+            "Wrong result"
+          ],
+          [
+            "Reject NUL in otherwise valid UTF-8",
+            false,
+            "Wrong result"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "path",
+      "title": "Validate a handoff snapshot path",
+      "group": "Repository contract",
+      "task": "Implement valid_snapshot_path(value: str) -> bool. Match the ChangedFile handoff validator's path restrictions on normalized input. Assume no surrounding whitespace.",
+      "query": "ChangedFile handoff path validator and allowed snapshot path components.",
+      "keywords": [
+        "ChangedFile",
+        "snapshot paths",
+        "path validation"
+      ],
+      "expected_source": "planning/changed-file-path.md",
+      "reference": [
+        {
+          "path": "planning/changed-file-path.md",
+          "excerpt": "# ChangedFile handoff path validation\nSnapshot paths must be project-relative strings with forward slashes. Reject backslash,\ncolon, and all characters from U+0000 through U+001F. Split on slash and reject any empty,\n\".\" or \"..\" path component, including at either end. Unicode, spaces inside a path, and\nhidden filenames such as \".config/settings.json\" are allowed. Preserve case and text.\n"
+        }
+      ],
+      "retrieval": {
+        "seconds": 0.022532707997015677,
+        "status": "found",
+        "hits": [
+          {
+            "path": "planning/changed-file-path.md",
+            "excerpt": "[Document: changed-file-path.md | Section: ChangedFile handoff path validation]\n# ChangedFile handoff path validation\nSnapshot paths must be project-relative strings with forward slashes. Reject backslash,\ncolon, and all characters from U+0000 through U+001F. Split on slash and reject any empty,\n\".\" or \"..\" path component, including at either end. Unicode, spaces inside a path, and\nhidden filenames such as \".config/settings.json\" are allowed. Preserve case and text.",
+            "collection": "research_docs",
+            "score": 0.01639,
+            "graph_relation": null
+          }
+        ]
+      },
+      "order": [
+        "baseline",
+        "reference",
+        "rag"
+      ],
+      "arms": {
+        "baseline": {
+          "response": "```python\nimport re\n\ndef valid_snapshot_path(value: str) -> bool:\n    # Regex pattern to match the path restrictions\n    # - Starts with a letter or underscore\n    # - Followed by letters, digits, underscores, or hyphens\n    # - No leading or trailing slashes\n    # - No whitespace\n    pattern = r'^[a-zA-Z_][a-zA-Z0-9_\\-]*$'\n    return bool(re.match(pattern, value))\n```",
+          "request_chars": 191,
+          "seconds": 6.647486290996312,
+          "checks": [
+            [
+              "Accept a Unicode hidden path",
+              false,
+              "Wrong result"
+            ],
+            [
+              "Reject traversal and repeated slash",
+              true,
+              ""
+            ],
+            [
+              "Reject colon anywhere",
+              true,
+              ""
+            ],
+            [
+              "Reject cross-platform separators and control bytes",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 132,
+          "eval_count": 102,
+          "done_reason": "stop",
+          "load_duration": 0.000780917,
+          "prompt_eval_duration": 0.463088,
+          "eval_duration": 6.175198
+        },
+        "reference": {
+          "response": "```python\nimport re\n\ndef valid_snapshot_path(value: str) -> bool:\n    # Check for invalid characters: backslash, colon, and control characters (U+0000-U+001F)\n    if re.search(r'[\\\\/:]', value) is not None:\n        return False\n    if re.search(r'[\\x00-\\x1F]', value) is not None:\n        return False\n    \n    # Split the path by slashes and check each component\n    components = value.split('/')\n    for component in components:\n        if not component:  # Empty component\n            return False\n        if component == '.' or component == '..':  # Invalid components\n            return False\n    \n    # Ensure the path is project-relative (no leading slash)\n    if value.startswith('/'):\n        return False\n    \n    return True\n```",
+          "request_chars": 649,
+          "seconds": 11.503562666999642,
+          "checks": [
+            [
+              "Accept a Unicode hidden path",
+              false,
+              "Wrong result"
+            ],
+            [
+              "Reject traversal and repeated slash",
+              true,
+              ""
+            ],
+            [
+              "Reject colon anywhere",
+              true,
+              ""
+            ],
+            [
+              "Reject cross-platform separators and control bytes",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 242,
+          "eval_count": 176,
+          "done_reason": "stop",
+          "load_duration": 0.002349833,
+          "prompt_eval_duration": 0.920938,
+          "eval_duration": 10.574532
+        },
+        "rag": {
+          "response": "```python\nimport re\n\ndef valid_snapshot_path(value: str) -> bool:\n    # Check for invalid characters: backslash, colon, and control characters (U+0000 through U+001F)\n    if re.search(r'[\\\\/:]', value) is not None:\n        return False\n    if re.search(r'[\\x00-\\x1F]', value) is not None:\n        return False\n    \n    # Split the path by slashes and check each component\n    components = value.split('/')\n    for component in components:\n        if not component:  # Empty component\n            return False\n        if component == '.' or component == '..':  # Invalid components\n            return False\n    \n    # Ensure the path is project-relative (does not start with a slash)\n    if value.startswith('/'):\n        return False\n    \n    # All checks passed\n    return True\n```",
+          "request_chars": 728,
+          "seconds": 12.632871791996877,
+          "checks": [
+            [
+              "Accept a Unicode hidden path",
+              false,
+              "Wrong result"
+            ],
+            [
+              "Reject traversal and repeated slash",
+              true,
+              ""
+            ],
+            [
+              "Reject colon anywhere",
+              true,
+              ""
+            ],
+            [
+              "Reject cross-platform separators and control bytes",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 259,
+          "eval_count": 186,
+          "done_reason": "stop",
+          "load_duration": 0.000677084,
+          "prompt_eval_duration": 0.955497,
+          "eval_duration": 11.659958
+        }
+      },
+      "audit": {
+        "baseline": [
+          [
+            "Accept a simple nested path",
+            false,
+            "Wrong result"
+          ]
+        ],
+        "reference": [
+          [
+            "Accept a simple nested path",
+            false,
+            "Wrong result"
+          ]
+        ],
+        "rag": [
+          [
+            "Accept a simple nested path",
+            false,
+            "Wrong result"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "batch",
+      "title": "Keep the notebook import batch policy",
+      "group": "Simulated prior decision",
+      "task": "Implement notebook_batch_size(value: int | None) -> int using the active project's batch limit for notebook import. Input parsing happens upstream.",
+      "query": "Current batch size limit for notebook import in the accepted implementation.",
+      "keywords": [
+        "notebook importer",
+        "batch limit",
+        "records per batch"
+      ],
+      "expected_source": "decisions/batch-size.md",
+      "reference": [
+        {
+          "path": "decisions/batch-size.md",
+          "excerpt": "# Current batch limit for notebook import\nThe notebook importer reads a batch size setting. When the setting is absent, import 24\nrecords per batch. Cap accepted values at 96 and floor at 3. Zero and negative integers\nare accepted and floored. Inputs have already been parsed as int or None.\n"
+        }
+      ],
+      "retrieval": {
+        "seconds": 0.02132437500404194,
+        "status": "found",
+        "hits": [
+          {
+            "path": "decisions/batch-size.md",
+            "excerpt": "[Document: batch-size.md | Section: Current batch limit for notebook import]\n# Current batch limit for notebook import\nThe notebook importer reads a batch size setting. When the setting is absent, import 24\nrecords per batch. Cap accepted values at 96 and floor at 3. Zero and negative integers\nare accepted and floored. Inputs have already been parsed as int or None.",
+            "collection": "research_docs",
+            "score": 0.01639,
+            "graph_relation": null
+          },
+          {
+            "path": "drafts/batch-size-archive.md",
+            "excerpt": "[Document: batch-size-archive.md | Section: Archived notebook importer batch limit]\n# Archived notebook importer batch limit\nThe prototype notebook importer used batches of 16, bounded by 1 and 128. This sheet\ndocuments the retired prototype and was kept for interpreting archived timings.",
+            "collection": "research_docs",
+            "score": 0.01613,
+            "graph_relation": null
+          }
+        ]
+      },
+      "order": [
+        "reference",
+        "baseline",
+        "rag"
+      ],
+      "arms": {
+        "reference": {
+          "response": "```python\ndef notebook_batch_size(value: int | None) -> int:\n    if value is None:\n        return 24\n    if value <= 0:\n        return 3\n    if value >= 96:\n        return 96\n    return value\n```",
+          "request_chars": 519,
+          "seconds": 4.541959834008594,
+          "checks": [
+            [
+              "Default applies only to None",
+              true,
+              ""
+            ],
+            [
+              "Zero is floored",
+              true,
+              ""
+            ],
+            [
+              "Interior values are preserved",
+              true,
+              ""
+            ],
+            [
+              "Large values are capped",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 211,
+          "eval_count": 60,
+          "done_reason": "stop",
+          "load_duration": 0.001018125,
+          "prompt_eval_duration": 0.918343,
+          "eval_duration": 3.603518
+        },
+        "baseline": {
+          "response": "```python\ndef notebook_batch_size(value: int | None) -> int:\n    if value is not None:\n        return value\n    # Assuming the active project's batch limit is 100 as a default\n    return 100\n```",
+          "request_chars": 173,
+          "seconds": 3.508925707996241,
+          "checks": [
+            [
+              "Default applies only to None",
+              false,
+              "Wrong result"
+            ],
+            [
+              "Zero is floored",
+              false,
+              "Wrong result"
+            ],
+            [
+              "Interior values are preserved",
+              true,
+              ""
+            ],
+            [
+              "Large values are capped",
+              false,
+              "Wrong result"
+            ]
+          ],
+          "prompt_eval_count": 130,
+          "eval_count": 54,
+          "done_reason": "stop",
+          "load_duration": 0.003534333,
+          "prompt_eval_duration": 0.188858,
+          "eval_duration": 3.305926
+        },
+        "rag": {
+          "response": "```python\nimport math\n\ndef notebook_batch_size(value: int | None) -> int:\n    if value is None:\n        return 24\n    clamped = max(3, min(96, value))\n    return clamped\n```",
+          "request_chars": 944,
+          "seconds": 4.7287065840064315,
+          "checks": [
+            [
+              "Default applies only to None",
+              true,
+              ""
+            ],
+            [
+              "Zero is floored",
+              true,
+              ""
+            ],
+            [
+              "Interior values are preserved",
+              true,
+              ""
+            ],
+            [
+              "Large values are capped",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 305,
+          "eval_count": 53,
+          "done_reason": "stop",
+          "load_duration": 0.0007785,
+          "prompt_eval_duration": 1.455424,
+          "eval_duration": 3.263736
+        }
+      },
+      "audit": {
+        "reference": [
+          [
+            "Floor positive inputs below the minimum",
+            false,
+            "Wrong result"
+          ],
+          [
+            "Accept and floor a negative integer",
+            true,
+            ""
+          ]
+        ],
+        "baseline": [
+          [
+            "Floor positive inputs below the minimum",
+            false,
+            "Wrong result"
+          ],
+          [
+            "Accept and floor a negative integer",
+            false,
+            "Wrong result"
+          ]
+        ],
+        "rag": [
+          [
+            "Floor positive inputs below the minimum",
+            true,
+            ""
+          ],
+          [
+            "Accept and floor a negative integer",
+            true,
+            ""
+          ]
+        ]
+      }
+    },
+    {
+      "id": "retry",
+      "title": "Apply the carousel retry schedule",
+      "group": "Simulated prior decision",
+      "task": "Implement carousel_pause_ms(attempt: int) -> int following the carousel adapter's approved retry budget. Attempt is a zero-based index. Support all integer inputs.",
+      "query": "Carousel adapter retry budget approved pause schedule in milliseconds.",
+      "keywords": [
+        "carousel adapter",
+        "retry budget",
+        "pause schedule"
+      ],
+      "expected_source": "decisions/retry-budget.md",
+      "reference": [
+        {
+          "path": "decisions/retry-budget.md",
+          "excerpt": "# Carousel adapter retry budget\nUse a zero-based failed attempt index. Negative attempts are treated as zero.\nThe accepted retry pause schedule in milliseconds is 180, 540, 1620, 2100.\nUse 2100 for every attempt index above three. Return an integer.\n"
+        }
+      ],
+      "retrieval": {
+        "seconds": 0.023883791989646852,
+        "status": "found",
+        "hits": [
+          {
+            "path": "decisions/retry-budget.md",
+            "excerpt": "[Document: retry-budget.md | Section: Carousel adapter retry budget]\n# Carousel adapter retry budget\nUse a zero-based failed attempt index. Negative attempts are treated as zero.\nThe accepted retry pause schedule in milliseconds is 180, 540, 1620, 2100.\nUse 2100 for every attempt index above three. Return an integer.",
+            "collection": "research_docs",
+            "score": 0.01639,
+            "graph_relation": null
+          },
+          {
+            "path": "drafts/retry-backoff.md",
+            "excerpt": "[Document: retry-backoff.md | Section: Default HTTP retry backoff]\n# Default HTTP retry backoff\nThe shared web client starts at 100 milliseconds and doubles its backoff after each\nfailed attempt, capped at 3000 milliseconds. The carousel adapter has its own schedule.",
+            "collection": "research_docs",
+            "score": 0.01613,
+            "graph_relation": null
+          },
+          {
+            "path": "implementation-summary.md",
+            "excerpt": "[Document: implementation-summary.md | Section: Prior implementation snapshots > Changed files]\n## Changed files  \n- `utils.py` — Fixture snapshot\n- `embedding/decode_source.py` — Fixture snapshot\n- `planning/changed-file-path.md` — Fixture snapshot\n- `decisions/batch-size.md` — Fixture snapshot\n- `decisions/retry-budget.md` — Fixture snapshot\n- `decisions/compact-status.md` — Fixture snapshot\n- `drafts/admin-status.md` — Fixture snapshot\n- `drafts/retry-backoff.md` — Fixture snapshot\n- `drafts/batch-size-archive.md` — Fixture snapshot\n- `notes/spool-budget.md` — Fixture snapshot\n- `notes/chunking.md` — Fixture snapshot\n- `notes/exports.md` — Fixture snapshot",
+            "collection": "research_docs",
+            "score": 0.00635,
+            "graph_relation": null
+          }
+        ]
+      },
+      "order": [
+        "baseline",
+        "reference",
+        "rag"
+      ],
+      "arms": {
+        "baseline": {
+          "response": "```python\ndef carousel_pause_ms(attempt: int) -> int:\n    if attempt < 0:\n        return 0\n    return 100 * (2 ** attempt)\n```",
+          "request_chars": 189,
+          "seconds": 2.9709704169945326,
+          "checks": [
+            [
+              "The initial pause is correct",
+              false,
+              "Wrong result"
+            ],
+            [
+              "Negative attempts clamp to the initial pause",
+              false,
+              "Wrong result"
+            ],
+            [
+              "Intermediate entries match the schedule",
+              false,
+              "Wrong result"
+            ],
+            [
+              "The terminal retry pause is capped",
+              false,
+              "Wrong result"
+            ]
+          ],
+          "prompt_eval_count": 134,
+          "eval_count": 41,
+          "done_reason": "stop",
+          "load_duration": 0.000780625,
+          "prompt_eval_duration": 0.466069,
+          "eval_duration": 2.493236
+        },
+        "reference": {
+          "response": "```python\nimport math\n\ndef carousel_pause_ms(attempt: int) -> int:\n    attempt = max(0, attempt)\n    if attempt < 4:\n        pauses = [180, 540, 1620, 2100]\n        return pauses[attempt]\n    else:\n        return 2100\n```",
+          "request_chars": 495,
+          "seconds": 5.5513301660103025,
+          "checks": [
+            [
+              "The initial pause is correct",
+              true,
+              ""
+            ],
+            [
+              "Negative attempts clamp to the initial pause",
+              true,
+              ""
+            ],
+            [
+              "Intermediate entries match the schedule",
+              true,
+              ""
+            ],
+            [
+              "The terminal retry pause is capped",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 218,
+          "eval_count": 78,
+          "done_reason": "stop",
+          "load_duration": 0.001766542,
+          "prompt_eval_duration": 0.907234,
+          "eval_duration": 4.637131
+        },
+        "rag": {
+          "response": "```python\nimport math\n\ndef carousel_pause_ms(attempt: int) -> int:\n    attempt = max(0, attempt)\n    if attempt < 4:\n        pauses = [180, 540, 1620, 2100]\n        return pauses[attempt]\n    else:\n        return 2100\n```",
+          "request_chars": 1619,
+          "seconds": 7.5667943750013364,
+          "checks": [
+            [
+              "The initial pause is correct",
+              true,
+              ""
+            ],
+            [
+              "Negative attempts clamp to the initial pause",
+              true,
+              ""
+            ],
+            [
+              "Intermediate entries match the schedule",
+              true,
+              ""
+            ],
+            [
+              "The terminal retry pause is capped",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 494,
+          "eval_count": 78,
+          "done_reason": "stop",
+          "load_duration": 0.000689375,
+          "prompt_eval_duration": 2.745701,
+          "eval_duration": 4.810436
+        }
+      },
+      "audit": {}
+    },
+    {
+      "id": "status",
+      "title": "Encode compact export statuses",
+      "group": "Simulated prior decision",
+      "task": "Implement compact_status(status: str) -> str using the existing compact export status codes, including normalization and fallback for new statuses.",
+      "query": "Compact export status fixed width reader mapping and unknown fallback.",
+      "keywords": [
+        "compact export",
+        "status codes",
+        "fixed-width"
+      ],
+      "expected_source": "decisions/compact-status.md",
+      "reference": [
+        {
+          "path": "decisions/compact-status.md",
+          "excerpt": "# Compact export status\nThe compact export is separate from the admin screens and is consumed by a fixed-width\nreader. Normalize an input string by stripping outer whitespace and converting it to\nlowercase. The compact export codes are: queued maps to Q0, running maps to X2,\ndone maps to Z7, failed maps to F4. Unknown input maps to U9.\n"
+        }
+      ],
+      "retrieval": {
+        "seconds": 0.02116925000154879,
+        "status": "found",
+        "hits": [
+          {
+            "path": "decisions/compact-status.md",
+            "excerpt": "[Document: compact-status.md | Section: Compact export status]\n# Compact export status\nThe compact export is separate from the admin screens and is consumed by a fixed-width\nreader. Normalize an input string by stripping outer whitespace and converting it to\nlowercase. The compact export codes are: queued maps to Q0, running maps to X2,\ndone maps to Z7, failed maps to F4. Unknown input maps to U9.",
+            "collection": "research_docs",
+            "score": 0.01639,
+            "graph_relation": null
+          }
+        ]
+      },
+      "order": [
+        "baseline",
+        "reference",
+        "rag"
+      ],
+      "arms": {
+        "baseline": {
+          "response": "```python\ndef compact_status(status: str) -> str:\n    status = status.strip().lower()\n    if status in ['success', 'ok']:\n        return 'success'\n    elif status in ['failed', 'error']:\n        return 'error'\n    elif status in ['pending', 'queued']:\n        return 'pending'\n    elif status in ['skipped', 'ignored']:\n        return 'skipped'\n    else:\n        return 'unknown'\n```",
+          "request_chars": 173,
+          "seconds": 6.258138040997437,
+          "checks": [
+            [
+              "Queued has its compact code",
+              false,
+              "Wrong result"
+            ],
+            [
+              "Normalize before mapping",
+              false,
+              "Wrong result"
+            ],
+            [
+              "Terminal states have distinct codes",
+              false,
+              "Wrong result"
+            ],
+            [
+              "Unknown status uses the export fallback",
+              false,
+              "Wrong result"
+            ]
+          ],
+          "prompt_eval_count": 127,
+          "eval_count": 93,
+          "done_reason": "stop",
+          "load_duration": 0.000610959,
+          "prompt_eval_duration": 0.463699,
+          "eval_duration": 5.776919
+        },
+        "reference": {
+          "response": "```python\ndef compact_status(status: str) -> str:\n    status = status.strip().lower()\n    status_map = {\n        'queued': 'Q0',\n        'running': 'X2',\n        'done': 'Z7',\n        'failed': 'F4'\n    }\n    return status_map.get(status, 'U9')\n```",
+          "request_chars": 570,
+          "seconds": 5.684118000004673,
+          "checks": [
+            [
+              "Queued has its compact code",
+              true,
+              ""
+            ],
+            [
+              "Normalize before mapping",
+              true,
+              ""
+            ],
+            [
+              "Terminal states have distinct codes",
+              true,
+              ""
+            ],
+            [
+              "Unknown status uses the export fallback",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 220,
+          "eval_count": 73,
+          "done_reason": "stop",
+          "load_duration": 0.000664666,
+          "prompt_eval_duration": 0.960516,
+          "eval_duration": 4.718925
+        },
+        "rag": {
+          "response": "```python\ndef compact_status(status: str) -> str:\n    status = status.strip().lower()\n    status_map = {\n        'queued': 'Q0',\n        'running': 'X2',\n        'done': 'Z7',\n        'failed': 'F4'\n    }\n    return status_map.get(status, 'U9')\n```",
+          "request_chars": 632,
+          "seconds": 5.925122790999012,
+          "checks": [
+            [
+              "Queued has its compact code",
+              true,
+              ""
+            ],
+            [
+              "Normalize before mapping",
+              true,
+              ""
+            ],
+            [
+              "Terminal states have distinct codes",
+              true,
+              ""
+            ],
+            [
+              "Unknown status uses the export fallback",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 233,
+          "eval_count": 73,
+          "done_reason": "stop",
+          "load_duration": 0.003173167,
+          "prompt_eval_duration": 0.997665,
+          "eval_duration": 4.916113
+        }
+      },
+      "audit": {}
+    },
+    {
+      "id": "dedupe",
+      "title": "Remove duplicates in arrival order",
+      "group": "General Python control",
+      "task": "Implement unique_in_order(items: list[str]) -> list[str]. Keep the first occurrence of each exact string in input order. Leave the input unchanged.",
+      "query": "Stable exact string deduplication in arrival order in Python.",
+      "keywords": [
+        "deduplicate",
+        "first occurrence",
+        "unique_in_order"
+      ],
+      "expected_source": null,
+      "reference": [],
+      "retrieval": {
+        "seconds": 0.021711209003115073,
+        "status": "no_results",
+        "hits": []
+      },
+      "order": [
+        "reference",
+        "baseline",
+        "rag"
+      ],
+      "arms": {
+        "reference": {
+          "response": "```python\ndef unique_in_order(items):\n    seen = set()\n    result = []\n    for item in items:\n        if item not in seen:\n            seen.add(item)\n            result.append(item)\n    return result\n```",
+          "request_chars": 173,
+          "seconds": 3.9263836659956723,
+          "checks": [
+            [
+              "Order wins over alphabetical sorting",
+              true,
+              ""
+            ],
+            [
+              "Case is significant",
+              true,
+              ""
+            ],
+            [
+              "Empty input and empty string are accepted",
+              true,
+              ""
+            ],
+            [
+              "Do not mutate the input",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 132,
+          "eval_count": 47,
+          "done_reason": "stop",
+          "load_duration": 0.000617625,
+          "prompt_eval_duration": 0.550798,
+          "eval_duration": 3.36257
+        },
+        "baseline": {
+          "response": "```python\ndef unique_in_order(items):\n    seen = set()\n    result = []\n    for item in items:\n        if item not in seen:\n            seen.add(item)\n            result.append(item)\n    return result\n```",
+          "request_chars": 173,
+          "seconds": 3.6656161669961875,
+          "checks": [
+            [
+              "Order wins over alphabetical sorting",
+              true,
+              ""
+            ],
+            [
+              "Case is significant",
+              true,
+              ""
+            ],
+            [
+              "Empty input and empty string are accepted",
+              true,
+              ""
+            ],
+            [
+              "Do not mutate the input",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 132,
+          "eval_count": 47,
+          "done_reason": "stop",
+          "load_duration": 0.000698959,
+          "prompt_eval_duration": 0.073031,
+          "eval_duration": 3.588086
+        },
+        "rag": {
+          "response": "```python\ndef unique_in_order(items):\n    seen = set()\n    result = []\n    for item in items:\n        if item not in seen:\n            seen.add(item)\n            result.append(item)\n    return result\n```",
+          "request_chars": 173,
+          "seconds": 3.844445499998983,
+          "checks": [
+            [
+              "Order wins over alphabetical sorting",
+              true,
+              ""
+            ],
+            [
+              "Case is significant",
+              true,
+              ""
+            ],
+            [
+              "Empty input and empty string are accepted",
+              true,
+              ""
+            ],
+            [
+              "Do not mutate the input",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 132,
+          "eval_count": 47,
+          "done_reason": "stop",
+          "load_duration": 0.000712875,
+          "prompt_eval_duration": 0.074556,
+          "eval_duration": 3.765487
+        }
+      },
+      "audit": {}
+    },
+    {
+      "id": "merge",
+      "title": "Merge overlapping closed intervals",
+      "group": "General Python control",
+      "task": "Implement merge_windows(windows: list[tuple[int, int]]) -> list[tuple[int, int]]. Assume valid closed intervals. Sort by start, merge overlaps including shared endpoints, and leave the input unchanged. Adjacent disjoint intervals stay separate.",
+      "query": "Merge sorted closed intervals sharing an endpoint in Python.",
+      "keywords": [
+        "merge_windows",
+        "closed intervals",
+        "shared endpoint"
+      ],
+      "expected_source": null,
+      "reference": [],
+      "retrieval": {
+        "seconds": 0.021271457997499965,
+        "status": "no_results",
+        "hits": []
+      },
+      "order": [
+        "baseline",
+        "rag",
+        "reference"
+      ],
+      "arms": {
+        "baseline": {
+          "response": "```python\ndef merge_windows(windows: list[tuple[int, int]]) -> list[tuple[int, int]]:\n    if not windows:\n        return []\n    # Sort intervals by their start value\n    sorted_windows = sorted(windows, key=lambda x: x[0])\n    merged = [sorted_windows[0]]\n    for current in sorted_windows[1:]:\n        last = merged[-1]\n        if current[0] <= last[1]:\n            # Overlapping or adjacent, merge them\n            merged[-1] = (last[0], max(last[1], current[1]))\n        else:\n            merged.append(current)\n    return merged\n```",
+          "request_chars": 270,
+          "seconds": 12.630420791989309,
+          "checks": [
+            [
+              "Merge an overlap chain from unsorted input",
+              true,
+              ""
+            ],
+            [
+              "Keep disjoint adjacent intervals",
+              true,
+              ""
+            ],
+            [
+              "Contained or exact duplicate intervals collapse",
+              true,
+              ""
+            ],
+            [
+              "Do not sort the input in place",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 151,
+          "eval_count": 137,
+          "done_reason": "stop",
+          "load_duration": 0.000686792,
+          "prompt_eval_duration": 0.965356,
+          "eval_duration": 11.654848
+        },
+        "rag": {
+          "response": "```python\ndef merge_windows(windows: list[tuple[int, int]]) -> list[tuple[int, int]]:\n    if not windows:\n        return []\n    # Sort intervals by their start value\n    sorted_windows = sorted(windows, key=lambda x: x[0])\n    merged = [sorted_windows[0]]\n    for current in sorted_windows[1:]:\n        last = merged[-1]\n        if current[0] <= last[1]:\n            # Overlapping or adjacent, merge them\n            merged[-1] = (last[0], max(last[1], current[1]))\n        else:\n            merged.append(current)\n    return merged\n```",
+          "request_chars": 270,
+          "seconds": 13.75492612500966,
+          "checks": [
+            [
+              "Merge an overlap chain from unsorted input",
+              true,
+              ""
+            ],
+            [
+              "Keep disjoint adjacent intervals",
+              true,
+              ""
+            ],
+            [
+              "Contained or exact duplicate intervals collapse",
+              true,
+              ""
+            ],
+            [
+              "Do not sort the input in place",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 151,
+          "eval_count": 137,
+          "done_reason": "stop",
+          "load_duration": 0.000728875,
+          "prompt_eval_duration": 0.084684,
+          "eval_duration": 13.665365
+        },
+        "reference": {
+          "response": "```python\ndef merge_windows(windows: list[tuple[int, int]]) -> list[tuple[int, int]]:\n    if not windows:\n        return []\n    # Sort intervals by their start value\n    sorted_windows = sorted(windows, key=lambda x: x[0])\n    merged = [sorted_windows[0]]\n    for current in sorted_windows[1:]:\n        last = merged[-1]\n        if current[0] <= last[1]:\n            # Overlapping or adjacent, merge them\n            merged[-1] = (last[0], max(last[1], current[1]))\n        else:\n            merged.append(current)\n    return merged\n```",
+          "request_chars": 270,
+          "seconds": 19.048942624998745,
+          "checks": [
+            [
+              "Merge an overlap chain from unsorted input",
+              true,
+              ""
+            ],
+            [
+              "Keep disjoint adjacent intervals",
+              true,
+              ""
+            ],
+            [
+              "Contained or exact duplicate intervals collapse",
+              true,
+              ""
+            ],
+            [
+              "Do not sort the input in place",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 151,
+          "eval_count": 137,
+          "done_reason": "stop",
+          "load_duration": 0.000673292,
+          "prompt_eval_duration": 0.101692,
+          "eval_duration": 18.934839
+        }
+      },
+      "audit": {}
+    },
+    {
+      "id": "unpublished",
+      "title": "Handle an unpublished spool code",
+      "group": "Missing-policy control",
+      "task": "Implement nightly_spool_code() -> str using the project's exact published nightly handoff spool code. The caller needs an exact value and cannot accept an invented default.",
+      "query": "Find the exact published nightly handoff spool code for archive spool records.",
+      "keywords": [
+        "nightly handoff",
+        "spool code",
+        "archive spool"
+      ],
+      "expected_source": null,
+      "reference": [],
+      "retrieval": {
+        "seconds": 0.02143012499436736,
+        "status": "found",
+        "hits": [
+          {
+            "path": "notes/spool-budget.md",
+            "excerpt": "[Document: spool-budget.md | Section: Archive spool retention]\n# Archive spool retention\nThe archive spool uses an hourly rotation policy. Pending archive spool records are\nstored as JSON line batches. The dedicated nightly handoff's spool code remains unpublished.",
+            "collection": "research_docs",
+            "score": 0.01639,
+            "graph_relation": null
+          }
+        ]
+      },
+      "order": [
+        "baseline",
+        "reference",
+        "rag"
+      ],
+      "arms": {
+        "baseline": {
+          "response": "MISSING_POLICY",
+          "request_chars": 198,
+          "seconds": 1.5410040420101723,
+          "checks": [
+            [
+              "Explicitly report missing policy",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 136,
+          "eval_count": 4,
+          "done_reason": "stop",
+          "load_duration": 0.009147291,
+          "prompt_eval_duration": 1.133585,
+          "eval_duration": 0.374374
+        },
+        "reference": {
+          "response": "MISSING_POLICY",
+          "request_chars": 198,
+          "seconds": 0.4994733749917941,
+          "checks": [
+            [
+              "Explicitly report missing policy",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 136,
+          "eval_count": 4,
+          "done_reason": "stop",
+          "load_duration": 0.000943167,
+          "prompt_eval_duration": 0.120643,
+          "eval_duration": 0.371387
+        },
+        "rag": {
+          "response": "MISSING_POLICY",
+          "request_chars": 514,
+          "seconds": 1.7091760420007631,
+          "checks": [
+            [
+              "Explicitly report missing policy",
+              true,
+              ""
+            ]
+          ],
+          "prompt_eval_count": 206,
+          "eval_count": 4,
+          "done_reason": "stop",
+          "load_duration": 0.001712125,
+          "prompt_eval_duration": 1.394608,
+          "eval_duration": 0.304857
+        }
+      },
+      "audit": {}
+    }
+  ]
+}

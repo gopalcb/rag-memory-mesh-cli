@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qwen3 8B · RAG Memory Evaluation</title>
+<style>
+:root {
+  color-scheme: light;
+  --canvas: #edf0f7; --paper: #fff; --navy: #151d3e; --primary: #464ecd;
+  --muted: #535d7c; --line: #dce1ee; --signal: #a8ebcc;
+  --success: #17634b; --error: #a13548;
+  --mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--canvas); color: var(--navy); font: 16px/1.55 system-ui, sans-serif; }
+main, .mast-inner { width: min(1224px, calc(100% - 48px)); margin-inline: auto; }
+header { background: var(--navy); color: var(--paper); padding: 34px 0 40px; }
+h1, h2, h3, p { margin: 0; }
+h1 { margin: 8px 0; font-size: clamp(2rem, 6vw, 3.35rem); line-height: 1.05; letter-spacing: -.05em; }
+h2 { font-size: 1.3rem; letter-spacing: -.02em; }
+h3 { font-size: 1.05rem; }
+header p { max-width: 68ch; color: var(--line); }
+.kicker, .meta { font: .82rem/1.5 var(--mono); }
+.kicker { color: var(--signal); }
+.meta, .secondary { color: var(--muted); }
+main { padding: 20px 0 44px; }
+section { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+.section-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 15px; }
+.controls { display: flex; flex-wrap: wrap; gap: 12px; }
+.field { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+select { min-height: 44px; max-width: 100%; border: 1px solid var(--muted); border-radius: 5px; background: var(--paper); color: inherit; padding: 6px 10px; font: inherit; }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+.bar-line { display: grid; grid-template-columns: 9rem minmax(30px, 1fr) minmax(4.4rem, auto); align-items: center; gap: 12px; margin-top: 9px; }
+.track { height: 13px; background: var(--canvas); border-radius: 4px; }
+.bar { display: block; height: 100%; border-radius: 4px; min-width: 0; }
+.baseline { --series: var(--muted); }
+.rag { --series: var(--primary); }
+.reference { --series: var(--success); }
+.bar { background: var(--series); }
+.value { font: 600 .86rem/1.5 var(--mono); text-align: right; }
+#scale { text-align: right; margin-top: 8px; }
+#task, #insight { margin-top: 7px; max-width: 89ch; }
+#insight { color: var(--muted); }
+.pipeline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 17px 0; }
+.pipeline > div { border-top: 2px solid var(--line); padding-top: 7px; min-width: 0; overflow-wrap: anywhere; }
+.pipeline strong { display: block; }
+.arms { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.arm { min-width: 0; border-top: 4px solid var(--series); padding: 10px 0 0; }
+.arm h3 { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.arm > .meta { margin-block: 5px 10px; }
+ul { margin: 0; padding: 0; list-style: none; }
+.check { padding: 5px 0; border-top: 1px solid var(--line); overflow-wrap: anywhere; }
+.pass { color: var(--success); }
+.fail { color: var(--error); }
+summary { padding: 10px 0; font-weight: 600; cursor: pointer; overflow-wrap: anywhere; }
+pre { margin: 0 0 12px; padding: 10px; background: var(--canvas); border-radius: 4px; overflow-wrap: anywhere; white-space: pre-wrap; font: .8rem/1.5 var(--mono); }
+.evidence { border-top: 1px solid var(--line); margin-top: 12px; }
+.evidence summary { min-height: 44px; }
+.evidence details { margin-left: 12px; }
+footer { display: flex; flex-wrap: wrap; gap: 12px; }
+a { color: var(--primary); text-underline-offset: 3px; }
+@media (max-width: 720px) {
+  main, .mast-inner { width: calc(100% - 24px); }
+  section { padding: 13px; }
+  .arms, .pipeline { grid-template-columns: 1fr; }
+  .bar-line { grid-template-columns: 6.4rem minmax(30px, 1fr) minmax(3.1rem, auto); gap: 6px; font-size: .88rem; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="mast-inner">
+    <p class="kicker" id="run-label"></p>
+    <h1>What did memory change?</h1>
+    <p id="headline"></p>
+  </div>
+</header>
+<main>
+  <noscript><p>Enable JavaScript to compare cases or open the recorded results JSON.</p></noscript>
+  <section aria-labelledby="overall-title">
+    <div class="section-header">
+      <h2 id="overall-title">Compare the three conditions</h2>
+      <div class="controls">
+      <label class="field">Task group
+        <select id="group"><option value="">All tasks</option></select>
+      </label>
+      <label class="field">Metric
+        <select id="metric">
+          <option value="checks">Behavioral checks passed</option>
+          <option value="cases">Tasks fully passed</option>
+          <option value="seconds">Median generation time</option>
+          <option value="prompt">Median prompt tokens</option>
+        </select>
+      </label>
+      </div>
+    </div>
+    <div id="bars" role="group" aria-label="Aggregate benchmark results" aria-live="polite"></div>
+    <p id="scale" class="meta"></p>
+  </section>
+  <section aria-labelledby="case-title">
+    <div class="section-header">
+      <h2 id="case-title">Explore a case</h2>
+      <label class="field">Task <select id="case"></select></label>
+    </div>
+    <p class="meta" id="case-group"></p>
+    <p id="task"></p>
+    <p id="insight"></p>
+    <div class="pipeline" id="pipeline" aria-live="polite"></div>
+    <div class="arms" id="arms" aria-label="Paired responses"></div>
+    <details class="evidence" id="evidence">
+      <summary>Inspect the exact context sent to Qwen</summary>
+      <div id="excerpts"></div>
+    </details>
+  </section>
+  <footer>
+    <a href="README.md">Method and interpretation</a>
+    <a href="results.json">Raw trial results</a>
+    <a href="../../../scripts/memory_eval/cases.py">Fixture corpus and checks</a>
+  </footer>
+</main>
+<script id="run-data" type="application/json">__RUN_JSON__</script>
+<script>
+"use strict";
+const byId = id => document.getElementById(id);
+const report = JSON.parse(byId("run-data").textContent);
+const names = {baseline: "No memory", rag: "Retrieved memory", reference: "Reference excerpt"};
+const armIds = Object.keys(names);
+const count = arm => arm.checks.filter(check => check[1]).length;
+const median = values => {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+};
+const totalChecks = cases => cases.reduce((sum, item) => sum + item.arms.baseline.checks.length, 0);
+const checksPassed = (cases, id) => cases.reduce((sum, item) => sum + count(item.arms[id]), 0);
+const fullCases = (cases, id) => cases.filter(item => item.arms[id].checks.every(check => check[1])).length;
+const node = (tag, text, cls) => {
+  const item = document.createElement(tag);
+  if (text !== undefined) item.textContent = text;
+  if (cls) item.className = cls;
+  return item;
+};
+const seconds = value => value.toFixed(2) + " s";
+const hasSource = item => item.expected_source &&
+  item.retrieval.hits.some(hit => hit.path === item.expected_source);
+const compare = (before, after) => after > before ? "improved" :
+  (after < before ? "regressed" : "tied");
+
+const metric = byId("metric");
+const group = byId("group");
+for (const label of new Set(report.cases.map(item => item.group))) {
+  const option = node("option", label);
+  option.value = label;
+  group.append(option);
+}
+
+function updateBars() {
+  const cases = group.value ? report.cases.filter(item => item.group === group.value) : report.cases;
+  const values = armIds.map(id => {
+    switch (metric.value) {
+      case "checks": return checksPassed(cases, id);
+      case "cases": return fullCases(cases, id);
+      case "seconds": return median(cases.map(item => item.arms[id].seconds));
+      case "prompt": return median(cases.map(item => item.arms[id].prompt_eval_count));
+    }
+  });
+  const limit = {checks: totalChecks(cases), cases: cases.length}[metric.value];
+  const ceiling = limit ?? Math.max(1, ...values);
+  const labels = values.map(value => {
+    if (limit) return value + " / " + limit;
+    if (metric.value === "seconds") return seconds(value);
+    return value + " tokens";
+  });
+  byId("bars").replaceChildren(...armIds.map((id, index) => {
+    const row = node("div", undefined, "bar-line " + id);
+    const track = node("span", undefined, "track");
+    const bar = node("span", undefined, "bar");
+    track.setAttribute("aria-hidden", "true");
+    bar.style.width = (100 * values[index] / ceiling) + "%";
+    track.append(bar);
+    row.append(node("span", names[id]), track, node("span", labels[index], "value"));
+    return row;
+  }));
+  byId("scale").textContent = limit ? "Higher is better" :
+    metric.value === "seconds" ? "Ollama request wall time, excluding lookup and grading" :
+    "Prompt token count reported by Ollama";
+}
+
+function renderArm(id, arm, audit) {
+  const article = node("article", undefined, "arm " + id);
+  const heading = node("h3", names[id]);
+  heading.append(node("span", count(arm) + " / " + arm.checks.length, "value"));
+  const timing = seconds(arm.seconds) + " · " + (arm.prompt_eval_count ?? "—") + " prompt tokens" +
+    " · " + (arm.eval_count ?? "—") + " output tokens";
+  article.append(heading, node("p", timing, "meta"), renderChecks(arm.checks));
+  if (audit) {
+    const additional = node("details");
+    additional.append(node("summary", "Post-run edge checks"), renderChecks(audit));
+    article.append(additional);
+  }
+  const output = node("details");
+  output.append(node("summary", "Read model response"), node("pre", arm.response || "(empty response)"));
+  article.append(output);
+  return article;
+}
+
+function renderChecks(results) {
+  const checks = node("ul");
+  for (const [label, passed, reason] of results) {
+    const check = node("li", undefined, "check");
+    check.append(node("strong", passed ? "Pass " : "Fail ", passed ? "pass" : "fail"),
+      document.createTextNode(label + (reason ? " (" + reason + ")" : "")));
+    checks.append(check);
+  }
+  return checks;
+}
+
+function renderExcerpt(summary, content) {
+  const details = node("details");
+  details.append(node("summary", summary), node("pre", content));
+  return details;
+}
+
+const caseSelect = byId("case");
+for (const item of report.cases) {
+  const option = node("option", item.title);
+  option.value = item.id;
+  caseSelect.append(option);
+}
+
+function updateCase() {
+  const item = report.cases.find(candidate => candidate.id === caseSelect.value);
+  const hits = item.retrieval.hits;
+  const before = count(item.arms.baseline);
+  const after = count(item.arms.rag);
+  const reference = count(item.arms.reference);
+  const rank = hits.findIndex(hit => hit.path === item.expected_source) + 1;
+  byId("case-group").textContent = item.group;
+  byId("task").textContent = item.task;
+  const interpretation = [
+    before === after ? "Retrieved memory tied the baseline." :
+      "Retrieved memory " + compare(before, after) + " by " + Math.abs(after - before) + " checks.",
+    item.expected_source ? rank ?
+      "The target source appeared at position " + rank + " in the prompt." :
+      "The target source was absent from the prompt." : "This control has no target implementation excerpt.",
+    reference > after ? "The hand-picked excerpt passed more checks." :
+      reference < after ? "Retrieved memory passed more checks than the hand-picked excerpt." : "",
+  ];
+  byId("insight").textContent = interpretation.filter(Boolean).join(" ");
+  const pipeline = [
+    ["Lookup", item.query],
+    ["Context", hits.length + " excerpts · " + seconds(item.retrieval.seconds) +
+      (item.expected_source ? rank ? " · target at " + rank : " · target absent" : "")],
+    ["Output", before + " → " + after + " checks with retrieved memory"],
+  ];
+  byId("pipeline").replaceChildren(...pipeline.map(([title, text]) => {
+    const cell = node("div");
+    cell.append(node("strong", title), node("span", text));
+    return cell;
+  }));
+  byId("arms").replaceChildren(...armIds.map(id => renderArm(id, item.arms[id], item.audit?.[id])));
+  const sources = hits.map((hit, index) =>
+    renderExcerpt((index + 1) + ". " + hit.path + (hit.path === item.expected_source ? " · target" : "") +
+      " · " + hit.collection + (hit.graph_relation ? " · " + hit.graph_relation : ""), hit.excerpt));
+  const referenceContext = item.reference.map(source => renderExcerpt("Reference · " + source.path, source.excerpt));
+  byId("evidence").open = false;
+  byId("excerpts").replaceChildren(
+    node("p", "Lexical keywords · " + item.keywords.join(" · "), "meta"),
+    node("p", "The no-memory prompt uses an empty evidence list.", "secondary"),
+    ...(sources.length ? sources : [node("p", "Retrieval returned no excerpts.", "secondary")]),
+    ...(referenceContext.length ? referenceContext : [node("p", "The reference prompt uses an empty evidence list.", "secondary")]),
+  );
+}
+
+const targeted = report.cases.filter(item => item.expected_source);
+byId("run-label").textContent = report.model.name + " / " + report.cases.length +
+  " paired tasks / Ollama " + report.ollama;
+byId("headline").textContent = "Retrieved memory passed " + checksPassed(report.cases, "rag") + " of " + totalChecks(report.cases) +
+  " checks. No memory passed " + checksPassed(report.cases, "baseline") + ". The index surfaced the target in " +
+  targeted.filter(hasSource).length + " of " + targeted.length + " tasks with a target source.";
+const gain = item => count(item.arms.rag) - count(item.arms.baseline);
+caseSelect.value = [...report.cases].sort((a, b) => gain(b) - gain(a))[0].id;
+group.addEventListener("change", updateBars);
+metric.addEventListener("change", updateBars);
+caseSelect.addEventListener("change", updateCase);
+updateBars();
+updateCase();
+</script>
+</body>
+</html>

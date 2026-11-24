@@ -1,0 +1,6 @@
+(version 1)
+(allow default)
+(deny network*)
+(deny file-write*)
+(deny process-fork)
+(deny file-read-data (subpath "/Users") (subpath "/Volumes") (subpath "/private/etc") (subpath "/private/tmp") (subpath "/private/var/folders"))
