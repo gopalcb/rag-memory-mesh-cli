@@ -1,0 +1,13 @@
+.venv/
+.rag_memory_data/
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+
+/docs/
+/.codex/
+.DS_Store

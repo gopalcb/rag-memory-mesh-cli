@@ -1,0 +1,79 @@
+storage:
+  base_dir: "./.rag_memory_data"
+  chroma_dir: "./.rag_memory_data/chroma_db"
+  sqlite_db_path: "./.rag_memory_data/state.sqlite3"
+  markdown_vault_dir: "./.rag_memory_data/vault/md"
+
+collections:
+  code: "reusable_code"
+  docs: "research_docs"
+
+# Embedding Configuration: "local" (SentenceTransformers) or "api" (OpenAI-compatible)
+embedding:
+  provider: "local"                       # "local" | "api"
+  batch_size: 32
+
+  local:
+    model_name: "all-MiniLM-L6-v2"        # e.g., "all-MiniLM-L6-v2" or "BAAI/bge-base-en-v1.5"
+    revision: "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+    device: "cpu"                         # "cpu" | "mps" | "cuda"
+    normalize_embeddings: true
+
+  api:
+    base_url: "https://api.openai.com/v1" # Or "https://openrouter.ai/api/v1"
+    api_key: "${EMBEDDING_API_KEY}"       # Expanded from environment / .env
+    model_name: "text-embedding-3-small"
+    check_ctx_length: false               # Keep false for OpenRouter / non-OpenAI providers
+
+# LLM Configuration (Used by Coordinator, Planner & Synthesis subagents)
+llm:
+  provider: "ollama"                      # "codex" | "ollama" | "api"
+  temperature: 0.0
+
+  codex:
+    cli_path: "codex"
+    model_name: ""
+    sandbox_mode: "read-only"
+    timeout_seconds: 120
+
+  ollama:
+    base_url: "http://127.0.0.1:11434"
+    model_name: "qwen2.5-coder:3b"
+
+  api:
+    base_url: "https://openrouter.ai/api/v1"
+    api_key: "${OPENROUTER_API_KEY}"
+    model_name: "openrouter/free"
+
+chunking:
+  md_chunk_size: 900
+  md_chunk_overlap: 100
+  code_max_chars: 2400
+
+retrieval:
+  mode: "hybrid"                # "hybrid" | "vector" | "keyword"
+  rrf_k: 60                     # Reciprocal Rank Fusion smoothing constant
+  vector_weight: 0.6
+  keyword_weight: 0.4
+  expand_ast_neighbors: true    # Auto-attach 1-hop called/imported symbols
+  max_neighbor_chunks: 2
+  code_max_distance: 0.38
+  docs_max_distance: 0.50
+  default_top_k: 4
+
+crawler:
+  max_concurrency: 4
+  pruning_threshold: 0.45
+  cache_ttl_hours: 168                    # 7 days before re-crawling a URL
+  allowed_domains:
+    - docs.python.org
+    - docs.langchain.com
+    - docs.crawl4ai.com
+    - developers.openai.com
+    - modelcontextprotocol.io
+    - flask.palletsprojects.com
+    - vuejs.org
+
+security:
+  allow_external_models: false
+  private_profile: false

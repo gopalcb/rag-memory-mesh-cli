@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="ingestion-token" content="{{ mutation_token }}">
+    <title>Ingestion console · RAG Memory</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='ingestion.css') }}">
+    <script defer src="{{ url_for('static', filename='vendor/vue.global.prod.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='ingestion.js') }}"></script>
+</head>
+<body>
+    <noscript><p class="wrap">Enable JavaScript to manage ingestion jobs.</p></noscript>
+    <div id="console" v-cloak>
+        <header class="masthead">
+            <div class="wrap">
+                <div class="masthead-row">
+                    <p class="product"><span class="index-mark" aria-hidden="true"></span> RAG Memory</p>
+                    <span class="connection" :class="{ 'connection-live': phase === 'ready' }" role="status">
+                        <span aria-hidden="true"></span> [[ connectionLabel ]]
+                    </span>
+                </div>
+                <h1>Ingestion console</h1>
+                <p class="intro">Index Python and Markdown from your local files.</p>
+            </div>
+        </header>
+
+        <main class="wrap">
+            <div v-if="phase === 'offline'" class="connection-error" role="alert">
+                [[ connectionError ]]
+                <button type="button" class="secondary" @click="refresh">Retry connection</button>
+            </div>
+            <div class="controls">
+                <section class="panel source" aria-labelledby="source-title">
+                    <h2 id="source-title">Add a source</h2>
+                    <form novalidate @submit.prevent="submitSource">
+                        <fieldset class="mode-select">
+                            <legend class="sr-only">Ingestion mode</legend>
+                            <label><input type="radio" name="mode" value="once" v-model="mode" :disabled="submitting"> Index once</label>
+                            <label><input type="radio" name="mode" value="watch" v-model="mode" :disabled="submitting"> Watch folder</label>
+                        </fieldset>
+                        <label for="local-path" class="field-label">[[ watching ? "Folder path" : "File or folder path" ]]</label>
+                        <input id="local-path" class="path-input" ref="pathInput" v-model="path" type="text" autocomplete="off"
+                            spellcheck="false" autocapitalize="off" :placeholder="watching ? '/path/to/project' : '/path/to/project/guide.md'"
+                            :aria-invalid="formError ? 'true' : null" aria-describedby="path-hint form-error"
+                            :readonly="submitting" @input="clearFormFeedback">
+                        <p id="path-hint" class="hint">[[ watching ? "Indexes the folder now and when supported files change." : "Use an absolute path to a folder or a .py, .md, or .markdown file." ]]</p>
+                        <p id="form-error" class="feedback error" aria-live="polite" v-show="formError">[[ formError ]]</p>
+                        <div class="form-actions">
+                            <button type="submit" class="primary" :disabled="submitting">[[ submitLabel ]]</button>
+                            <span class="feedback success" role="status">[[ formNotice ]]</span>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="panel watches" aria-labelledby="watch-title">
+                    <div class="panel-title">
+                        <h2 id="watch-title">Folder watches</h2>
+                        <span v-if="loaded" class="count">[[ watchers.length ]]</span>
+                    </div>
+                    <p v-if="!loaded" class="empty">[[ phase === 'offline' ? "Folder watches unavailable." : "Loading watches…" ]]</p>
+                    <p v-else-if="!watchers.length" class="empty">Choose <strong>Watch folder</strong> to keep a source current.</p>
+                    <ul v-else class="watch-list" aria-label="Registered folder watches">
+                        <li v-for="watch in watchers" :key="watch.id" class="watch-row">
+                            <div class="watch-text">
+                                <code>[[ watch.path ]]</code>
+                                <p class="hint" v-if="watch.last_run">Last run [[ formatDate(watch.last_run) ]]</p>
+                                <p v-if="watch.error" class="feedback error">[[ watch.error ]]</p>
+                            </div>
+                            <span class="state" :data-state="!watch.enabled ? 'paused' : watch.error ? 'failed' : 'watching'">
+                                [[ !watch.enabled ? "Paused" : watch.error ? "Unavailable" : "Watching" ]]
+                            </span>
+                            <button type="button" class="secondary compact" :disabled="pending.has(watch.id)"
+                                :aria-label="(watch.enabled ? 'Pause ' : 'Resume ') + watch.path"
+                                @click="toggleWatch(watch)">[[ watch.enabled ? 'Pause' : 'Resume' ]]</button>
+                        </li>
+                    </ul>
+                    <p v-if="watchError" class="feedback error" role="alert">[[ watchError ]]</p>
+                </section>
+            </div>
+
+            <section class="panel activity" aria-labelledby="activity-title">
+                <div class="panel-title">
+                    <h2 id="activity-title">Recent activity</h2>
+                    <span v-if="jobs.length" class="hint">Latest [[ jobs.length ]]</span>
+                </div>
+                <p v-if="!loaded" class="empty">[[ phase === 'offline' ? "Activity unavailable." : "Loading activity…" ]]</p>
+                <p v-else-if="!jobs.length" class="empty">Ingestion runs will appear here.</p>
+                <div v-else class="table-scroll" tabindex="0" role="region" aria-label="Recent activity entries">
+                    <table>
+                        <thead><tr><th scope="col">Source</th><th scope="col">Trigger</th><th scope="col">State</th>
+                            <th scope="col">Result</th><th scope="col">Time</th></tr></thead>
+                        <tbody>
+                            <tr v-for="job in jobs" :key="job.id">
+                                <th scope="row"><code>[[ job.path ]]</code></th>
+                                <td>[[ job.watcher_id ? "Watch" : "Manual" ]]</td>
+                                <td><span class="state" :data-state="job.status">[[ statusLabel(job.status) ]]</span></td>
+                                <td>
+                                    <span v-if="job.result" class="job-result">[[ describeResult(job.result) ]]</span>
+                                    <div v-else-if="job.error" class="job-error">
+                                        <span>[[ job.error ]]</span>
+                                        <button type="button" class="secondary compact" :disabled="pending.has(job.id)"
+                                            :aria-label="'Retry ' + job.path" @click="retry(job)">Retry</button>
+                                    </div>
+                                    <span v-else aria-label="Pending result">—</span>
+                                </td>
+                                <td><time :datetime="job.created_at">[[ formatDate(job.created_at) ]]</time></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p v-if="jobError" class="feedback error" role="alert">[[ jobError ]]</p>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
